@@ -18,6 +18,8 @@ const giftPosition = {
   y: undefined,
 };
 
+let enemyPositions = [];
+
 window.addEventListener("load", setCanvasSize);
 window.addEventListener("resize", setCanvasSize);
 
@@ -46,6 +48,8 @@ function startGame() {
   const mapRows = map.trim().split("\n");
   const mapRowCols = mapRows.map((row) => row.trim().split(""));
 
+  enemyPositions = [];
+
   game.clearRect(0, 0, canvasSize, canvasSize);
 
   mapRowCols.forEach((row, rowI) => {
@@ -63,6 +67,11 @@ function startGame() {
       } else if (col == "I") {
         giftPosition.x = posX;
         giftPosition.y = posY;
+      } else if(col == 'Y'){
+        enemyPositions.push({
+          x: posX,
+          y: posY
+        })
       }
 
       game.fillText(emoji, posX, posY);
@@ -82,6 +91,12 @@ function movePlayer() {
   if (giftCollision) {
     console.log("Subiste de nivel");
   }
+  
+  const enemyCollision = enemyPositions.find(enemy => {
+    const enemyCollisionX = enemy.x.toFixed(3) == playerPosition.x.toFixed(3);
+    const enemyCollisionY = enemy.y.toFixed(3) == playerPosition.y.toFixed(3);
+    return enemyCollisionX && enemyCollisionY;
+  });
 
   game.fillText(emojis["PLAYER"], playerPosition.x, playerPosition.y);
 }
