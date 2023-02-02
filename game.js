@@ -6,6 +6,8 @@ const btnRight = document.querySelector("#right");
 const btnDown = document.querySelector("#down");
 const spanLives = document.querySelector("#lives");
 const spanTime = document.querySelector("#time");
+const spanRecord = document.querySelector("#record");
+const pResult = document.querySelector("#result");
 
 let canvasSize;
 let elementsSize;
@@ -62,6 +64,7 @@ function startGame() {
   if(!timeStart){
     timeStart = Date.now();
     timeInterval = setInterval(showTime, 100);
+    showRecord();
   }
 
   const mapRows = map.trim().split("\n");
@@ -150,6 +153,23 @@ function levelFail(){
 function gameWin(){
   console.log('Terminaste el juego');
   clearInterval(timeInterval);
+
+  const recordTime = localStorage.getItem('record_time');
+  const playerTIme = Date.now() - timeStart;
+
+  if(recordTime){
+    if(recordTime >= playerTIme){
+        localStorage.setItem('record_time', playerTIme);
+        pResult.innerHTML = 'Superaste e Record';
+    } else {
+      pResult.innerHTML = 'Lo siento no superaste el record';
+    }
+  } else {
+    localStorage.setItem('record_time', playerTIme);
+    pResult.innerHTML= 'Tiempo: superar el tiempo';
+  }
+
+  console.log({recordTime, playerTIme});
 }
 
 function showLives(){
@@ -160,6 +180,10 @@ function showLives(){
 
 function showTime(){
   spanTime.innerHTML = Date.now() - timeStart;
+}
+
+function showRecord(){
+  spanRecord.innerHTML = localStorage.getItem('record_time');
 }
 
 window.addEventListener("keydown", moveByKeys);
