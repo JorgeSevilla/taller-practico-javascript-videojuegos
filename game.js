@@ -4,11 +4,17 @@ const btnUp = document.querySelector("#up");
 const btnLeft = document.querySelector("#left");
 const btnRight = document.querySelector("#right");
 const btnDown = document.querySelector("#down");
+const spanLives = document.querySelector("#lives");
+const spanTime = document.querySelector("#time");
 
 let canvasSize;
 let elementsSize;
 let level = 0;
 let lives = 3;
+
+let timeStart;
+let timePlayer;
+let timeInterval;
 
 const playerPosition = {
   x: undefined,
@@ -53,8 +59,15 @@ function startGame() {
     return;
   }
 
+  if(!timeStart){
+    timeStart = Date.now();
+    timeInterval = setInterval(showTime, 100);
+  }
+
   const mapRows = map.trim().split("\n");
   const mapRowCols = mapRows.map((row) => row.trim().split(""));
+
+  showLives();
 
   enemyPositions = [];
 
@@ -70,7 +83,7 @@ function startGame() {
         if (!playerPosition.x && !playerPosition.y) {
           playerPosition.x = posX;
           playerPosition.y = posY;
-          console.log(playerPosition);
+          console.log({playerPosition});
         }
       } else if (col == "I") {
         giftPosition.x = posX;
@@ -78,8 +91,8 @@ function startGame() {
       } else if(col == 'X'){
         enemyPositions.push({
           x: posX,
-          y: posY
-        })
+          y: posY,
+        });
       }
 
       game.fillText(emoji, posX, posY);
@@ -123,11 +136,10 @@ function levelFail(){
   console.log('Chocaste');
   level--;
 
-  console.log(lives);
-
   if(lives <= 0){
     level = 0;
     lives = 3;
+    timeStart = undefined;
   }
 
   playerPosition.x = undefined;
@@ -137,6 +149,17 @@ function levelFail(){
 
 function gameWin(){
   console.log('Terminaste el juego');
+  clearInterval(timeInterval);
+}
+
+function showLives(){
+  const heartsArray = Array(lives).fill(emojis['HEART']);
+  spanLives.innerHTML =  "";
+  heartsArray.forEach(heart => spanLives.append(heart));
+}
+
+function showTime(){
+  spanTime.innerHTML = Date.now() - timeStart;
 }
 
 window.addEventListener("keydown", moveByKeys);
@@ -153,7 +176,7 @@ function moveByKeys(event) {
 }
 
 function moveUp() {
-  if (playerPosition.y - elementsSize < elementsSize) {
+  if ((playerPosition.y - elementsSize) < elementsSize) {
     console.log("OUT");
   } else {
     playerPosition.y -= elementsSize;
@@ -162,7 +185,7 @@ function moveUp() {
 }
 
 function moveLeft() {
-  if (playerPosition.x - elementsSize < elementsSize) {
+  if ((playerPosition.x - elementsSize) < elementsSize) {
     console.log("OUT");
   } else {
     playerPosition.x -= elementsSize;
@@ -171,7 +194,7 @@ function moveLeft() {
 }
 
 function moveRight() {
-  if (playerPosition.x + elementsSize > canvasSize) {
+  if ((playerPosition.x + elementsSize) > canvasSize) {
     console.log("OUT");
   } else {
     playerPosition.x += elementsSize;
@@ -180,7 +203,7 @@ function moveRight() {
 }
 
 function moveDown() {
-  if (playerPosition.y + elementsSize > canvasSize) {
+  if ((playerPosition.y + elementsSize) > canvasSize) {
     console.log("OUT");
   } else {
     playerPosition.y += elementsSize;
